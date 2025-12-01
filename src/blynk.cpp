@@ -1,48 +1,38 @@
-/************* BLYNK TEMPLATE INFO *************/
 #define BLYNK_TEMPLATE_ID "TMPL3Gvdu2oj4"
 #define BLYNK_TEMPLATE_NAME "human presence"
 #define BLYNK_AUTH_TOKEN "o6cBMIzBTKM_t1O3gMw51vC9lU0erBQZX"
 
-/************* LIBRARIES *************/
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 #include <driver/i2s.h>
 
-/************* WIFI LOGIN *************/
 const char* ssid = "Omm's A35";
 const char* pass = "Megamind";
 
-/************* SENSOR PINS *************/
-#define CO2_PIN    34   // MG811 Analog pin
-#define RADAR_PIN  23   // Human presence sensor (LD2410 / MH-100X OUT)
+#define CO2_PIN    34   
+#define RADAR_PIN  23   
 
-/************* INMP441 I2S PINS *************/
 #define I2S_WS   15
 #define I2S_SCK  14
 #define I2S_SD   32
 
-/************* INMP441 FILTER VARIABLES *************/
 float sensitivity = 0.07;
 int noiseGate = 50;
 float smooth1 = 0.04;
 float smooth2 = 0.03;
 int32_t f1 = 0, f2 = 0;
 
-/************* HUMAN PRESENCE *************/
 unsigned long lastDetectTime = 0;
 bool presenceFlag = false;
 
-/************* SETUP *************/
 void setup() {
   Serial.begin(115200);
 
   pinMode(RADAR_PIN, INPUT_PULLDOWN);
 
-  /************* BLYNK START *************/
   Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
 
-  /************* INMP441 INIT *************/
   const i2s_config_t i2s_config = {
     mode: (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
     sample_rate: 44100,
@@ -67,7 +57,6 @@ void setup() {
   Serial.println("System Ready...");
 }
 
-/************* MAIN LOOP *************/
 void loop() {
   Blynk.run();
 
@@ -76,7 +65,6 @@ void loop() {
   readPresence();
 }
 
-/************* CO2 (MG811) *************/
 void readCO2() {
   int raw = analogRead(CO2_PIN);
   float voltage = raw * (3.3 / 4095.0);
@@ -90,7 +78,6 @@ void readCO2() {
   Serial.println(co2Smooth);
 }
 
-/************* INMP441 VIBRATION *************/
 void readVibration() {
   int32_t raw = 0;
   size_t bytesRead;
@@ -113,7 +100,6 @@ void readVibration() {
   }
 }
 
-/************* HUMAN PRESENCE SENSOR *************/
 void readPresence() {
   int val = digitalRead(RADAR_PIN);
 
